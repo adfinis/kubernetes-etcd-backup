@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: backup-config
+data:
+  ETCD_BACKUP_SUBDIR: "/"
+  ETCD_BACKUP_DIRNAME: "+etcd-backup-%FT%T%:z"
+  ETCD_BACKUP_EXPIRE_TYPE: "days"
+  ETCD_BACKUP_KEEP_DAYS: "30"
+  ETCD_BACKUP_KEEP_COUNT: "10"
+  ETCD_BACKUP_UMASK: "0027"

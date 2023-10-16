@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: etcd-backup-pv
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: example.com
+    path: "/etcd-backup"
+  capacity:
+    storage: 10Gi
+  claimRef:
+    name: etcd-backup-pvc
+    namespace: etcd-backup
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: etcd-backup-pvc
+spec:
+  volumeName: etcd-backup-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
