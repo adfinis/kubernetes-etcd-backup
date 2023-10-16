@@ -2,6 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: backup-config
+  namespace: etcd-backup
 data:
   ETCD_BACKUP_SUBDIR: "/"
   ETCD_BACKUP_DIRNAME: "+etcd-backup-%FT%T%:z"
@@ -9,3 +10,5 @@ data:
   ETCD_BACKUP_KEEP_DAYS: "30"
   ETCD_BACKUP_KEEP_COUNT: "10"
   ETCD_BACKUP_UMASK: "0027"
+  ENDPOINT: "192.168.39.86"
+

@@ -2,6 +2,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: etcd-backup
+  namespace: etcd-backup
 spec:
   schedule: "0 0 * * *"
   startingDeadlineSeconds: 600
@@ -14,7 +15,7 @@ spec:
           - command:
             - /bin/sh
             - /usr/local/bin/backup.sh
-            image: ghcr.io/adfinis/openshift-etcd-backup
+            image: ghcr.io/xelef2000/general-etcd-backup:sha256-939aa3341955aecb7189757f51e0c0ac0fedce913fc676f1bcacda1518613abc.sig
             imagePullPolicy: Always
             name: backup-etcd
             resources:
