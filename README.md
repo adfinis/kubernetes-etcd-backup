@@ -1,39 +1,52 @@
-# OpenShift etcd backup CronJob
+# Kubernetes etcd backup CronJob
 
 This CronJob creates an POD which runs `/usr/local/bin/cluster-backup.sh` on a master-node to create the described backup. After finishing, it copies the files to an configured PV and expires old backups according to its configuration.
 
-The OpenShift 4 backup generates 2 different files with the date when it is performed:
+The backup script generates a snapshot.db files with the date when it is performed:
 
-- snapshot_TIMESTAMP.db
-- static_kuberesources_TIMESTAMP.tar.gz
 
-The `.db` file is a snapshot of the etcd and the archived `.tar.gz` contains the static pods of the control plane (etcd, api server, controller manager and scheduler) with their respective certificates and private keys. Those files are put in a separate directory on the PV per backup run.
 
 ## Installation
 
 First, create a namespace:
 ```
-oc new-project etcd-backup
+kubectl create namespace etcd-backup
 ```
 
-Since the container needs to be privileged, add the reqired RBAC rules:
+### Get the necessary configuration
+You can read the etcd configuration and the location of the required certificates from your clusters etcd pod. The following commands will give you the necessary information:
+
 ```
-oc create -f backup-rbac.yaml
+kubectl describe pod -n kube-system etcd-<name of your etcd pod> |less 
 ```
+
+Get the IP address of the etcd endpoint and out it in the config map.
+Then get the location of the following certificates:
+- peer-cert-file etcd-peer.crt
+- peer-key-file etcd-peer.key
+- trusted-ca-file etcd-ca.crt
+
+Get those from the kubernetes host and put them into a secret:
+```
+kubectl create secret generic etcd-peer-tls --from-file=peer.crt --from-file=peer.key -n etcd-backup 
+kubectl create secret generic etcd-server-ca --from-file=ca.crt -n etcd-backup
+```
+### Create the backup configuration
 
 Then adjust the storage configuration to your needs in `backup-storage.yaml` and deploy it. The example uses NFS but you can use any storage class you want:
 ```
-oc create -f backup-storage.yaml
+kubectl create -f backup-storage.yaml
 ```
 
 Configure the backup-script:
 ```
-oc create -f backup-config.yaml
+kubectl create -f backup-config.yaml
 ```
+
 
 Then deploy, and configure the cronjob:
 ```
-oc create -f backup-cronjob.yaml
+kubectl create -f backup-cronjob.yaml
 ```
 
 ## Creating manual backup / testing
@@ -41,12 +54,12 @@ oc create -f backup-cronjob.yaml
 To test the backup, or create an manual backup, you can run a job:
 ```
 backupName=$(date "+etcd-backup-manual-%F-%H-%M-%S")
-oc create job --from=cronjob/etcd-backup ${backupName}
+kubectl create job --from=cronjob/etcd-backup ${backupName}
 ```
 
 To see if everything works as it should, you can check the logs:
 ```
-oc logs -l job-name=${backupName}
+kubectl logs -l job-name=${backupName}
 ```
 Then check on your Storage, if the files are there as excepted.
 
@@ -55,28 +68,29 @@ Then check on your Storage, if the files are there as excepted.
 Configuration can be changed in configmap `backup-config`:
 
 ```
-oc edit -n etcd-backup cm/backup-config
+kubectl edit -n etcd-backup cm/backup-config
 ```
 
 The following options are used:
-- `OCP_BACKUP_SUBDIR`: Sub directory on PVC that should be used to store the backup. If it does not exist it will be created.
-- `OCP_BACKUP_DIRNAME`: Directory name for a single backup. This is a format string used by
+- `ETCD_BACKUP_SUBDIR`: Sub directory on PVC that should be used to store the backup. If it does not exist it will be created.
+- `ETCD_BACKUP_DIRNAME`: Directory name for a single backup. This is a format string used by
 [`date`](https://man7.org/linux/man-pages/man1/date.1.html)
-- `OCP_BACKUP_EXPIRE_TYPE`:
+- `ETCD_BACKUP_EXPIRE_TYPE`:
   - `days`: Keep backups newer than `backup.keepdays`.
   - `count`: Keep a number of backups. `backup.keepcount` is used to determine how much.
   - `never`: Dont expire backups, keep all of them.
-- `OCP_BACKUP_KEEP_DAYS`: Days to keep the backup. Only used if `backup.expiretype` is set to `days`
-- `OCP_BACKUP_KEEP_COUNT`: Number of backups to keep. Only used if `backup.expiretype` is set to `count`
-- `OCP_BACKUP_UMASK`: Umask used inside the script to set restrictive permission on written files, as they contain sensitive information.
+- `ETCD_BACKUP_KEEP_DAYS`: Days to keep the backup. Only used if `backup.expiretype` is set to `days`
+- `ETCD_BACKUP_KEEP_COUNT`: Number of backups to keep. Only used if `backup.expiretype` is set to `count`
+- `ETCD_BACKUP_UMASK`: Umask used inside the script to set restrictive permission on written files, as they contain sensitive information.
+- `ENDPOINT`: The IP address of the etcd endpoint ,without port, e.g. `"192.168.39.86"`.
 
 Changing the schedule be done in the CronJob directly, with `spec.schedule`:
 ```
-oc edit -n etcd-backup cronjob/etcd-backup
+kubectl edit -n etcd-backup cronjob/etcd-backup
 ```
 Default is `0 0 * * *` which means the cronjob runs one time a day at midnight.
 
-## Monitoring
+<!-- ## Monitoring
 
 To be able to get alerts when backups are failing or not being scheduled you can deploy this [PrometheusRule](https://github.com/adfinis-sygroup/openshift-etcd-backup/etcd-backup-cronjob-monitor.PrometheusRule.yaml).
 
@@ -127,4 +141,4 @@ If a commit does not contain a conventional commit style message you can fix
 it during the squash and merge operation on the PR.
 
 ## References
-* https://docs.openshift.com/container-platform/4.7/backup_and_restore/backing-up-etcd.html
+* https://docs.openshift.com/container-platform/4.7/backup_and_restore/backing-up-etcd.html -->
