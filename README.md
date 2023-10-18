@@ -1,6 +1,6 @@
 # Kubernetes etcd backup CronJob
 
-This CronJob creates an POD which runs `/usr/local/bin/cluster-backup.sh` on a master-node to create the described backup. After finishing, it copies the files to an configured PV and expires old backups according to its configuration.
+This CronJob creates an POD which runs `/backup.sh` on a kubernetes cluster to create the described backup. After finishing, it copies the files to an configured PV and expires old backups according to its configuration.
 
 The backup script generates a snapshot.db files with the date when it is performed:
 
@@ -14,23 +14,39 @@ kubectl create namespace etcd-backup
 ```
 
 ### Get the necessary configuration
-You can read the etcd configuration and the location of the required certificates from your clusters etcd pod. The following commands will give you the necessary information:
+If you run etcd in your cluster you can read the etcd configuration and the location of the required certificates from your clusters etcd pod. The following commands will give you the necessary information:
 
 ```
 kubectl describe pod -n kube-system etcd-<name of your etcd pod> |less 
 ```
 
-Get the IP address of the etcd endpoint and out it in the config map.
+Get the IP address of the etcd endpoint and put it in the config map.
 Then get the location of the following certificates:
 - peer-cert-file etcd-peer.crt
 - peer-key-file etcd-peer.key
 - trusted-ca-file etcd-ca.crt
 
-Get those from the kubernetes host and put them into a secret:
+If you run etcd outside of your cluster, you can get the information from the etcd configuration file. The default location is `etc/etcd.env`. The certificate information is in the TLS section. You need the `ETCD_ADVERTISE_CLIENT_URLS`, `ETCD_PEER_TRUSTED_CA_FILE`, `ETCD_PEER_CERT_FILE` and `ETCD_PEER_KEY_FILE` variables. The following example shows the default values:
+
+- ETCD_ADVERTISE_CLIENT_URLS=https://192.168.122.151:2379
+...
+- ETCD_PEER_TRUSTED_CA_FILE=/etc/ssl/etcd/ssl/ca.pem
+- ETCD_PEER_CERT_FILE=/etc/ssl/etcd/ssl/member-node1.pem
+- ETCD_PEER_KEY_FILE=/etc/ssl/etcd/ssl/member-node1-key.pem
+
+
+
+Get the certificates from the kubernetes host and put them into a secret:
 ```
 kubectl create secret generic etcd-peer-tls --from-file=peer.crt --from-file=peer.key -n etcd-backup 
 kubectl create secret generic etcd-server-ca --from-file=ca.crt -n etcd-backup
 ```
+Add the endpoint IP address to the config map, without `https://` or port:
+```
+  ENDPOINT: "192.168.122.151"
+```
+
+
 ### Create the backup configuration
 
 Then adjust the storage configuration to your needs in `backup-storage.yaml` and deploy it. The example uses NFS but you can use any storage class you want:
