@@ -64,7 +64,7 @@ mkdir -p "/host/var/tmp/etcd-backup"
 mkdir -p "${BACKUP_PATH_POD}"
 
 # create backup to temporary location
-ETCDCTL_API=3 etcdctl --endpoints ${ENDPOINT}:2379 --cacert='/etc/kubernetes/pki/etcd-ca/ca.crt'  --cert='/etc/kubernetes/pki/etcd-peer/peer.crt' --key='/etc/kubernetes/pki/etcd-peer/peer.key' snapshot save /host/var/tmp/etcd-backup/snapshot.db 
+ETCDCTL_API=3 etcdctl --endpoints ${ENDPOINT}:2379 --cacert='/etc/kubernetes/pki/etcd-ca/ca.crt'  --cert='/etc/kubernetes/pki/etcd-peer/tls.crt' --key='/etc/kubernetes/pki/etcd-peer/tls.key' snapshot save /host/var/tmp/etcd-backup/snapshot.db 
 ETCDCTL_API=3 etcdctl --write-out=table snapshot status /host/var/tmp/etcd-backup/snapshot.db
 
 # move files to pvc and delete temporary files
