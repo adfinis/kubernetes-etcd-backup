@@ -29,7 +29,7 @@ Then get the location of the following certificates:
 If you run etcd outside of your cluster, you can get the information from the etcd configuration file. The default location is `etc/etcd.env`. The certificate information is in the TLS section. You need the `ETCD_ADVERTISE_CLIENT_URLS`, `ETCD_PEER_TRUSTED_CA_FILE`, `ETCD_PEER_CERT_FILE` and `ETCD_PEER_KEY_FILE` variables. The following example shows the default values:
 
 - ETCD_ADVERTISE_CLIENT_URLS=https://192.168.122.151:2379
-...
+- ...
 - ETCD_PEER_TRUSTED_CA_FILE=/etc/ssl/etcd/ssl/ca.pem
 - ETCD_PEER_CERT_FILE=/etc/ssl/etcd/ssl/member-node1.pem
 - ETCD_PEER_KEY_FILE=/etc/ssl/etcd/ssl/member-node1-key.pem
