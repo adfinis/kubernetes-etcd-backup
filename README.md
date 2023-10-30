@@ -38,8 +38,8 @@ If you run etcd outside of your cluster, you can get the information from the et
 
 Get the certificates from the kubernetes host and put them into a secret:
 ```
-kubectl create secret generic etcd-peer-tls --from-file=peer.crt --from-file=peer.key -n etcd-backup 
-kubectl create secret generic etcd-server-ca --from-file=ca.crt -n etcd-backup
+kubectl create secret generic etcd-peer-tls --from-file=tls.crt --from-file=tls.key -n etcd-backup 
+kubectl create secret generic etcd-server-ca --from-file=service-ca.crt -n etcd-backup
 ```
 Add the endpoint IP address to the config map, without `https://` or port:
 ```
