@@ -60,16 +60,16 @@ BACKUP_PATH_POD="$( realpath -m "/backup/${BACKUP_PATH}" )"
 BACKUP_ROOTPATH="$( realpath -m "/backup/${ETCD_BACKUP_SUBDIR}" )"
 
 # make nescesary directorys
-mkdir -p "/host/var/tmp/etcd-backup"
+mkdir -p "/tmp/etcd-backup"
 mkdir -p "${BACKUP_PATH_POD}"
 
 # create backup to temporary location
-ETCDCTL_API=3 etcdctl --endpoints ${ENDPOINT}:2379 --cacert='/etc/kubernetes/pki/etcd-ca/service-ca.crt'  --cert='/etc/kubernetes/pki/etcd-peer/tls.crt' --key='/etc/kubernetes/pki/etcd-peer/tls.key' snapshot save /host/var/tmp/etcd-backup/snapshot.db 
-ETCDCTL_API=3 etcdctl --write-out=table snapshot status /host/var/tmp/etcd-backup/snapshot.db
+ETCDCTL_API=3 etcdctl --endpoints ${ENDPOINT}:2379 --cacert='/etc/kubernetes/pki/etcd-ca/service-ca.crt'  --cert='/etc/kubernetes/pki/etcd-peer/tls.crt' --key='/etc/kubernetes/pki/etcd-peer/tls.key' snapshot save /tmp/etcd-backup/snapshot.db 
+ETCDCTL_API=3 etcdctl --write-out=table snapshot status /tmp/etcd-backup/snapshot.db
 
 # move files to pvc and delete temporary files
-mv /host/var/tmp/etcd-backup/* "${BACKUP_PATH_POD}"
-rm -rv /host/var/tmp/etcd-backup
+mv /tmp/etcd-backup/* "${BACKUP_PATH_POD}"
+rm -rv /tmp/etcd-backup
 
 # expire backup
 if [ "${ETCD_BACKUP_EXPIRE_TYPE}" = "days" ]; then
