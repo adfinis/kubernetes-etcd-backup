@@ -106,25 +106,30 @@ kubectl edit -n etcd-backup cronjob/etcd-backup
 ```
 Default is `0 0 * * *` which means the cronjob runs one time a day at midnight.
 
-<!-- ## Monitoring
+## Monitoring
 
 To be able to get alerts when backups are failing or not being scheduled you can deploy this [PrometheusRule](https://github.com/adfinis-sygroup/openshift-etcd-backup/etcd-backup-cronjob-monitor.PrometheusRule.yaml).
 
 ```
-oc create -n etcd-backup -f etcd-backup-cronjob-monitor.PrometheusRule.yaml
+kubectl create -n etcd-backup -f etcd-backup-cronjob-monitor.PrometheusRule.yaml
 ```
 
 # Helm chart
 
-To easily deploy the solution a helm chart is available on upstream Adfinis charts [repository](https://github.com/adfinis-sygroup/helm-charts/tree/master/charts/openshift-etcd-backup).
+To easily deploy the solution a helm chart is available on upstream Adfinis charts [repository](https://github.com/adfinis-sygroup/helm-charts/tree/master/charts/kubectl-etcd-backup).
 
 ## Installation
 
-Before installing the chart, feel free to update the `values.yaml` file according to your needs.
+Fist create the namespace:
+```
+kubectl create namespace etcd-backup
+```
+Then create the secretes as described above.
+Finally update the `values.yaml` file according to your needs.
 
 ```
 helm repo add adfinis https://charts.adfinis.com
-helm install etcd-backup adfinis/openshift-etcd-backup
+helm install etcd-backup adfinis/kubectl-etcd-backup
 ```
 
 ## Development
@@ -157,4 +162,4 @@ If a commit does not contain a conventional commit style message you can fix
 it during the squash and merge operation on the PR.
 
 ## References
-* https://docs.openshift.com/container-platform/4.7/backup_and_restore/backing-up-etcd.html -->
+* https://docs.openshift.com/container-platform/4.7/backup_and_restore/backing-up-etcd.html
