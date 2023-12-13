@@ -15,9 +15,9 @@ spec:
           - command:
             - /bin/sh
             - /usr/local/bin/backup.sh
-            image: ghcr.io/xelef2000/general-etcd-backup:main
+            image: ghcr.io/adfinis/kubernetes-etcd-backup:main
             imagePullPolicy: Always
-            name: backup-etcd
+            name: etcd-backup
             resources:
               requests:
                 cpu: 500m
@@ -28,9 +28,6 @@ spec:
             envFrom:
             - configMapRef:
                 name: backup-config
-            # securityContext:
-              # privileged: true
-              # runAsUser: 0
             volumeMounts:
             - name: volume-backup
               mountPath: /backup
@@ -38,16 +35,7 @@ spec:
               mountPath: /etc/kubernetes/pki/etcd-peer
             - name: etcd-server-ca
               mountPath: /etc/kubernetes/pki/etcd-ca
-          # nodeSelector:
-            # node-role.kubernetes.io/master: ""
-          # tolerations:
-            # - effect: NoSchedule
-              # key: node-role.kubernetes.io/master
-          # hostNetwork: true
-          # hostPID: true
-          # serviceAccountName: etcd-backup
           restartPolicy: Never
-          # dnsPolicy: ClusterFirst
           volumes:
           - name: volume-backup
             persistentVolumeClaim:
