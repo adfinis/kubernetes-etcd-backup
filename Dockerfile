@@ -7,6 +7,8 @@ COPY backup.sh /usr/local/bin/backup.sh
 
 RUN microdnf update -y && rm -rf /var/cache/yum
 RUN microdnf install findutils curl tar gzip -y && microdnf clean all
-RUN curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.11/etcd-v3.5.11-linux-amd64.tar.gz | tar xfz - -C /tmp --strip-components=1 --no-same-owner -- etcd-v3.5.11-linux-amd64/etcdctl
+RUN curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.11/etcd-v3.5.11-linux-amd64.tar.gz \
+	| tar xfz - -C /tmp --strip-components=1 --no-same-owner -- etcd-v3.5.11-linux-amd64/etcdctl \
+	&& mv /tmp/etcdctl /usr/local/bin/
 
 CMD ["/usr/local/bin/backup.sh"]
