@@ -9,12 +9,14 @@ RUN microdnf update -y && rm -rf /var/cache/yum
 
 # hadolint ignore=DL3041
 RUN microdnf install -y curl findutils gzip tar \
-	&& microdnf clean all
+    && microdnf clean all
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN /bin/bash -o pipefail -c "\
-	curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.11/etcd-v3.5.11-linux-amd64.tar.gz \
-	| tar xfz - -C /tmp --strip-components=1 --no-same-owner -- etcd-v3.5.11-linux-amd64/etcdctl \
-	&& mv /tmp/etcdctl /usr/local/bin/ \
-	"
+    curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-linux-amd64.tar.gz \
+    | tar xfz - -C /tmp --strip-components=1 --no-same-owner -- etcd-v3.5.15-linux-amd64/ \
+    && mv /tmp/etcdctl /usr/local/bin/ \
+    && mv /tmp/etcdutl /usr/local/bin/ \
+    && mv /tmp/etcd /usr/local/bin/ \
+    "
 
 CMD ["/usr/local/bin/backup.sh"]
