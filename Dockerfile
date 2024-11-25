@@ -10,6 +10,9 @@ RUN microdnf update -y && rm -rf /var/cache/yum
 # hadolint ignore=DL3041
 RUN microdnf install -y curl findutils gzip tar \
     && microdnf clean all
+RUN curl -O https://dl.min.io/client/mc/release/linux-amd64/mc.rpm \
+    && rpm -ih mc.rpm \
+    && rm mc.rpm
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN /bin/bash -o pipefail -c "\
     curl -L https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-linux-amd64.tar.gz \
