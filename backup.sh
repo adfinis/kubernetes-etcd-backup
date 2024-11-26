@@ -51,7 +51,7 @@ if [ "${ETCD_BACKUP_S3}" = "true" ]; then
     mkdir -p "/tmp/etcd-backup/${BACKUP_FOLDER}"
 
     # create backup to temporary location
-    ETCDCTL_API=3 etcdctl --endpoints "${ENDPOINT}:2379" --cacert='/etc/kubernetes/pki/etcd-ca/ca.crt'  --cert='/etc/kubernetes/pki/etcd-peer/tls.crt' --key='/etc/kubernetes/pki/etcd-peer/tls.key' snapshot save /tmp/etcd-backup/${BACKUP_FOLDER}/snapshot.db
+    ETCDCTL_API=3 etcdctl --endpoints "${ENDPOINT}:2379" --cacert="/etc/kubernetes/pki/etcd-ca/ca.crt"  --cert="/etc/kubernetes/pki/etcd-peer/tls.crt" --key="/etc/kubernetes/pki/etcd-peer/tls.key" snapshot save /tmp/etcd-backup/${BACKUP_FOLDER}/snapshot.db
     ETCDCTL_API=3 etcdutl --write-out=table snapshot status /tmp/etcd-backup/${BACKUP_FOLDER}/snapshot.db
 
     # move files to S3 and delete temporary files
