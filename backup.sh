@@ -31,12 +31,13 @@
 
 
 set -xeuo pipefail
+
 # check storage type
 if [ "${ETCD_BACKUP_S3}" = "true" ]; then
     # prepare & push backup to S3
 
     # update CA trust
-    update-ca-trust
+    # update-ca-trust
 
     # configure mcli assuming the bucket already exists
     bash +o history
@@ -54,7 +55,7 @@ if [ "${ETCD_BACKUP_S3}" = "true" ]; then
     ETCDCTL_API=3 etcdutl --write-out=table snapshot status /tmp/etcd-backup/${BACKUP_FOLDER}/snapshot.db
 
     # move files to S3 and delete temporary files
-    mcli mv -r /tmp/etcd-backup/* "${ETCD_BACKUP_S3_NAME}"/"${ETCD_BACKUP_S3_BUCKET}"
+    mcli mv $-r /tmp/etcd-backup/* "${ETCD_BACKUP_S3_NAME }"/"${ETCD_BACKUP_S3_BUCKET}"
     rm -rv /tmp/etcd-backup
 else
   # set proper umask
