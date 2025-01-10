@@ -4,6 +4,12 @@ metadata:
   name: backup-config
   namespace: etcd-backup
 data:
+  ETCD_BACKUP_S3: "false"
+  ETCD_BACKUP_S3_NAME: "minio"
+  ETCD_BACKUP_S3_HOST: "http://minio.local:9000"
+  ETCD_BACKUP_S3_BUCKET: "etcd-backup"
+  ETCD_BACKUP_S3_ACCESS_KEY: "randomaccesskey"
+  ETCD_BACKUP_S3_SECRET_KEY: "secretkey"
   ETCD_BACKUP_SUBDIR: "/"
   ETCD_BACKUP_DIRNAME: "+etcd-backup-%FT%T%:z"
   ETCD_BACKUP_EXPIRE_TYPE: "days"
