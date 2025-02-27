@@ -2,7 +2,7 @@
 name: Tag Docker Image with Git
 
 on:
-  create:
+  push:
     tags:
       - "v*.*.*"
 
@@ -31,6 +31,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}
+            type=semver,pattern=v{{major}}.{{minor}}
 
       - name: Build and push the Docker image
         uses: docker/build-push-action@v6
