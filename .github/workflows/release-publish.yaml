@@ -2,7 +2,7 @@
 name: Tag Docker Image with Git
 
 on:
-  create:
+  push:
     tags:
       - "v*.*.*"
 
