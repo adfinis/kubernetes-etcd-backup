@@ -40,9 +40,9 @@ if [ "${ETCD_BACKUP_S3}" = "true" ]; then
     update-ca-trust
 
     # configure mcli assuming the bucket already exists
-    bash +o history
+    set +o history +x  # disable history and printing of command to stdout, this prevents leaking the secret to the logs
     mcli alias set "${ETCD_BACKUP_S3_NAME}" "${ETCD_BACKUP_S3_HOST}" "${ETCD_BACKUP_S3_ACCESS_KEY}" "${ETCD_BACKUP_S3_SECRET_KEY}"
-    bash -o history
+    set -o history -x  # reenable history and output
 
     # make dirname
     BACKUP_FOLDER="$( date "${ETCD_BACKUP_DIRNAME}")" || { echo "Invalid backup.dirname" && exit 1; }
