@@ -1,13 +1,22 @@
+---
 version: 2
 updates:
+  # Update Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "fix: "
+    cooldown:
+      default-days: 7
+
+  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    groups:
-      actions:
-        patterns:
-          - "*"
+    commit-message:
+      prefix: "chore(ci): "
     cooldown:
       default-days: 7
-
